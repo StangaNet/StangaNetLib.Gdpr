@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>StangaNetLib.Gdpr</AssemblyName>
+    <RootNamespace>StangaNetLib.Gdpr</RootNamespace>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <Version>1.0.0</Version>
+    <Description>GDPR compliance toolkit for ASP.NET Core: consent management, immutable audit trail, AES-256-GCM pseudonymization, and data export/erasure contracts.</Description>
+    <PackageTags>gdpr;privacy;consent;audit;pseudonymization;aes;aspnetcore;clean-architecture</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Required: ASP.NET Core types (HttpContext, IMiddleware, IApplicationBuilder, etc.) -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+
+    <!-- StangaNetLib foundation â€” required -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="StangaNetLib.Gdpr.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StangaNetLib.Core" />
+  </ItemGroup>
+</Project>

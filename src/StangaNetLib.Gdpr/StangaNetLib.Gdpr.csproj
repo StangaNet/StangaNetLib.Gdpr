@@ -1,29 +1,55 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <AssemblyName>StangaNetLib.Gdpr</AssemblyName>
     <RootNamespace>StangaNetLib.Gdpr</RootNamespace>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <Version>1.0.0</Version>
-    <Description>GDPR compliance toolkit for ASP.NET Core: consent management, immutable audit trail, AES-256-GCM pseudonymization, and data export/erasure contracts.</Description>
-    <PackageTags>gdpr;privacy;consent;audit;pseudonymization;aes;aspnetcore;clean-architecture</PackageTags>
+    <Description>GDPR compliance toolkit for ASP.NET Core: consent management, immutable audit trail, AES-256-GCM pseudonymization, and data export/erasure contracts. Depends on StangaNetLib.Core.</Description>
+    <PackageTags>gdpr;privacy;consent;audit;pseudonymization;aes;aspnetcore;stanganet</PackageTags>
   </PropertyGroup>
-
-  <ItemGroup>
-    <!-- Required: ASP.NET Core types (HttpContext, IMiddleware, IApplicationBuilder, etc.) -->
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-
-    <!-- StangaNetLib foundation â€” required -->
-  </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="StangaNetLib.Gdpr.Tests" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="StangaNetLib.Core" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="StangaNetLib.Core" />
+    <None Include="..\..\build\**" Pack="true" PackagePath="build/" />
+  </ItemGroup>
+
+  <Target Name="StampBuildProps" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <_BuildPropsFile>$(MSBuildThisFileDirectory)..\..\build\StangaNetLib.Gdpr.props</_BuildPropsFile>
+    </PropertyGroup>
+    <ItemGroup>
+      <_BPLines Include="&lt;Project&gt;" />
+      <_BPLines Include="  &lt;ItemGroup&gt;" />
+      <_BPLines Include="    &lt;AssemblyAttribute Include=&quot;System.Reflection.AssemblyMetadataAttribute&quot;&gt;" />
+      <_BPLines Include="      &lt;_Parameter1&gt;StangaNetLib.Gdpr&lt;/_Parameter1&gt;" />
+      <_BPLines Include="      &lt;_Parameter2&gt;$(Version)&lt;/_Parameter2&gt;" />
+      <_BPLines Include="    &lt;/AssemblyAttribute&gt;" />
+      <_BPLines Include="  &lt;/ItemGroup&gt;" />
+      <_BPLines Include="&lt;/Project&gt;" />
+    </ItemGroup>
+    <WriteLinesToFile
+      File="$(_BuildPropsFile)"
+      Lines="@(_BPLines)"
+      Overwrite="true"
+      Encoding="UTF-8" />
+    <Message Text="StangaNetLib.Gdpr: stamped build props with version $(Version)" Importance="high" />
+  </Target>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\assets\package-icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\CHANGELOG.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

@@ -1,3 +1,9 @@
-- @azure Rule - Use Azure Tools - When handling requests related to Azure, always use your tools.
-- @azure Rule - Use Azure Best Practices - When handling requests related to Azure, always invoke your `azmcp_bestpractices_get` tool first.
-- @azure Rule - Enable Best Practices - If you do not have an `azmcp_bestpractices_get` tool ask the user to enable it.
+# StangaNetLib.Gdpr — Copilot instructions
+
+- GDPR toolkit: consent, DSAR, objection/restriction, audit/RoPA/breach, AES-256-GCM pseudonymization.
+- Prefer `Result` / `Result<T>` and `Guard` from `StangaNetLib.Core` for expected failures / validation.
+- Keep public APIs documented (`///`) and domain-centric (Consent / Dsar / Objection / Audit / Pseudonymization).
+- DI: `AddStangaNetLibGdpr`; pipeline: `UseStangaNetLibGdpr` / `UseStangaNetLibGdprRestrictions`.
+- Consumers must register persistence contracts (`IConsentRepository`, DSAR services, etc.).
+- Match existing naming, file-scoped namespaces, and EditorConfig / Roslyn conventions.
+- Tests use xUnit v3 + FluentAssertions; cover both `net8.0` and `net9.0` when changing shared behavior.

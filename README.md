@@ -4,24 +4,24 @@
 ![NuGet](https://img.shields.io/badge/nuget-1.0.0-blue)
 ![.NET](https://img.shields.io/badge/.NET-8.0%20%7C%209.0-512BD4)
 
-StangaNetLib.Gdpr is a domain-driven toolkit for managing GDPR compliance in ASP.NET Core applications. It provides structured implementations for core regulatory requirements, including explicit user consent management, automated Data Subject Access Request (DSAR) workflows, objection handling, audit logging for processing activities, and AES-256-GCM pseudonymization.
+GDPR compliance toolkit for ASP.NET Core: consent management, DSAR workflows, objection/restriction, audit/RoPA/breach models, and AES-256-GCM pseudonymization. Built on [`StangaNetLib.Core`](https://github.com/StangaNet/StangaNetLib.Core) (`Result`, `Guard`, audit abstractions).
 
 ## Design Philosophy
 
-- **Domain-Centric**: Organized around regulatory subdomains (Consent, DSAR, Objection, Audit, Pseudonymization) rather than technical layers.
-- **Functional Error Handling**: Employs the `Result<T>` pattern for managing domain compliance failures as data, ensuring predictable and type-safe control flows.
-- **Regulatory Integrity**: Built to support legal requirements (e.g., Art. 6, 12, 15, 17, 18, 21, 30, 33, 34) through highly typed domain models and abstractions.
-- **Modern Standards**: Fully optimized for .NET 8.0 and 9.0, utilizing modern C# features like `record` types and `IReadOnlyCollection<T>`.
+- **Domain-centric**: Consent, DSAR, Objection, Audit, Pseudonymization as capabilities.
+- **Functional failures**: domain outcomes map to `Result` / `Result<T>` where appropriate.
+- **Regulatory integrity**: typed models aligned to Art. 6/7/12/15/17/18/21/30/33/34.
+- **Modern .NET**: `net8.0` / `net9.0` with ASP.NET Core middleware hooks.
 
 ## Installation
 
-The package is hosted on **GitHub Packages**.
+The package is hosted on **GitHub Packages** (pulls Core from the same feed).
 
 ```xml
-<!-- NuGet.config — add the GitHub Packages source -->
+<!-- NuGet.config — source key must match your packageSourceCredentials -->
 <configuration>
   <packageSources>
-    <add key="github" value="https://nuget.pkg.github.com/StangaNet/index.json" />
+    <add key="StangaNet" value="https://nuget.pkg.github.com/StangaNet/index.json" />
   </packageSources>
 </configuration>
 ```
@@ -31,83 +31,55 @@ The package is hosted on **GitHub Packages**.
 <PackageReference Include="StangaNetLib.Gdpr" Version="1.0.0" />
 ```
 
----
+See [CHANGELOG.md](./CHANGELOG.md) for release history.
 
 ## Core Components
 
-*The library is organized into functional namespaces. For implementation details, refer directly to the source code.*
-
-| Namespace | Core Components | Purpose |
-| :--- | :--- | :--- |
-| `StangaNetLib.Gdpr.Consent` | `IConsentRepository`, `ConsentRecord`, `RequireConsentAttribute` | Managing user consent and legal basis (Art. 6/7). |
-| `StangaNetLib.Gdpr.Dsar` | `IDsarService`, `DsarRecord`, `DataExportResult` | Automated Data Subject Access Request (DSAR) workflows (Art. 12/15/17/20). |
-| `StangaNetLib.Gdpr.Objection` | `IDataProcessingObjectionService`, `ProcessingRestrictionMiddleware` | Handling right to object and restriction of processing (Art. 18/21). |
-| `StangaNetLib.Gdpr.Audit` | `IDataBreachService`, `IProcessingActivityRegistry`, `ProcessingActivity` | Compliance logging and breach notification (Art. 30/33/34). |
-| `StangaNetLib.Gdpr.Pseudonymization` | `IPseudonymizationService`, `PseudonymizationService` | Secure AES-256-GCM pseudonymization. |
-| `StangaNetLib.Gdpr.Configuration` | `GdprSettings`, `DataRetentionSettings` | Compliance configuration management. |
-
----
+| Namespace | Components | Purpose |
+|---|---|---|
+| `StangaNetLib.Gdpr.Consent` | `IConsentRepository`, middleware, attributes | Consent / Art. 6–7 |
+| `StangaNetLib.Gdpr.Dsar` | Export / deletion / DSAR contracts | Art. 12/15/17/20 |
+| `StangaNetLib.Gdpr.Objection` | Restriction / objection / rectification | Art. 16/18/21 |
+| `StangaNetLib.Gdpr.Audit` | Breach + RoPA contracts | Art. 30/33/34 |
+| `StangaNetLib.Gdpr.Pseudonymization` | AES-GCM + SHA-256 | Pseudonymization |
+| `StangaNetLib.Gdpr.Infrastructure.Extensions` | `AddStangaNetLibGdpr`, `UseStangaNetLibGdpr` | DI / pipeline |
 
 ## Project Structure
 
 ```
 StangaNetLib.Gdpr/
+├── assets/
+│   └── package-icon.png
 ├── build/
-│   └── StangaNetLib.Gdpr.props  # MSBuild auto-import
+│   └── StangaNetLib.Gdpr.props
 ├── src/
 │   └── StangaNetLib.Gdpr/
-│       ├── Audit/          # IDataBreachService, IProcessingActivityRegistry, ProcessingActivity
-│       ├── Configuration/  # GdprSettings, DataRetentionSettings
-│       ├── Consent/        # IConsentRepository, ConsentRecord, RequireConsentAttribute
-│       ├── Dsar/           # IDsarService, DsarRecord, DataExportResult
-│       ├── Objection/      # IDataProcessingObjectionService, ProcessingRestrictionMiddleware
-│       ├── Pseudonymization/ # IPseudonymizationService, PseudonymizationService
-│       └── Infrastructure/  # ServiceCollectionExtensions, ApplicationBuilderExtensions
+│       ├── Audit/
+│       ├── Configuration/
+│       ├── Consent/
+│       ├── Dsar/
+│       ├── Infrastructure/
+│       ├── Objection/
+│       └── Pseudonymization/
 └── tests/
     └── StangaNetLib.Gdpr.Tests/
 ```
 
----
-
 ## Quick Start
-
-### Configuration
-
-Define your settings in `appsettings.json`:
-
-```json
-{
-  "GdprSettings": {
-    "DataControllerName": "Acme Corp",
-    "DpoEmail": "dpo@acme.com",
-    "PseudonymizationKey": "YOUR_BASE64_32BYTE_KEY_HERE"
-  }
-}
-```
-
-### Registration
-
-Register the services in your `Program.cs`:
 
 ```csharp
 builder.Services.AddStangaNetLibGdpr(builder.Configuration);
+// Register IConsentRepository (+ DSAR/restriction services) in the host app
 
-// Middleware order is critical:
-// app.UseRouting();
-// app.UseAuthentication();
-// app.UseAuthorization();
-// app.UseStangaNetLibGdpr(); // Adds ConsentValidationMiddleware
-// app.UseStangaNetLibGdprRestrictions(); // Adds ProcessingRestrictionMiddleware
+app.UseStangaNetLibGdpr();
+app.UseStangaNetLibGdprRestrictions(); // optional
 ```
 
-### Usage Example: Enforcing Consent
+## CI/CD
 
-```csharp
-[RequireConsent("Marketing")]
-public async Task<Result> SendNewsletter(string userId)
-{
-    // This endpoint will automatically return HTTP 403 
-    // if the user has not granted 'Marketing' consent.
-    return await _newsletterService.SendAsync(userId);
-}
-```
+On push/PR to `main` and `workflow_dispatch`, the shared StangaNet workflow:
+
+1. Restores, builds, and tests on .NET 8 and .NET 9
+2. Packs the NuGet package (with symbols)
+3. Publishes to GitHub Packages outside pull requests
+4. Uploads the `.nupkg` as a build artifact

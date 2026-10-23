@@ -2,7 +2,7 @@
 
 [![.NET CI](https://github.com/StangaNet/StangaNetLib.Gdpr/actions/workflows/main.yml/badge.svg)](https://github.com/StangaNet/StangaNetLib.Gdpr/actions/workflows/main.yml)
 ![NuGet](https://img.shields.io/badge/nuget-1.0.0-blue)
-![.NET](https://img.shields.io/badge/.NET-8.0%20%7C%209.0-512BD4)
+![.NET](https://img.shields.io/badge/.NET-8.0%20%7C%209.0%20%7C%2010.0-512BD4)
 
 GDPR compliance toolkit for ASP.NET Core: consent management, DSAR workflows, objection/restriction, audit/RoPA/breach models, and AES-256-GCM pseudonymization. Built on [`StangaNetLib.Core`](https://github.com/StangaNet/StangaNetLib.Core) (`Result`, `Guard`, audit abstractions).
 
@@ -11,7 +11,7 @@ GDPR compliance toolkit for ASP.NET Core: consent management, DSAR workflows, ob
 - **Domain-centric**: Consent, DSAR, Objection, Audit, Pseudonymization as capabilities.
 - **Functional failures**: domain outcomes map to `Result` / `Result<T>` where appropriate.
 - **Regulatory integrity**: typed models aligned to Art. 6/7/12/15/17/18/21/30/33/34.
-- **Modern .NET**: `net8.0` / `net9.0` with ASP.NET Core middleware hooks.
+- **Modern .NET**: `net8.0` / `net9.0` / `net10.0` with ASP.NET Core middleware hooks.
 
 ## Installation
 
